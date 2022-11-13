@@ -18,18 +18,16 @@ namespace dotnet_rpg.Services.CharacterService
             _context = context;
             _mapper = mapper;
         }
-        private static List<Character> characters = new List<Character> {
-            new Character(),
-            new Character { Id = 1, Name = "Han Solo"}
-        };
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(AddCharacterDto newCharacter)
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
             Character character = _mapper.Map<Character>(newCharacter);
-            character.Id = characters.Max(chr => chr.Id) + 1;
-            characters.Add(character);
-            response.Data = characters.Select(chr => _mapper.Map<GetCharacterDto>(chr)).ToList();
+            _context.Characters.Add(character);
+            await _context.SaveChangesAsync();
+            response.Data = await _context.Characters
+                .Select(chr => _mapper.Map<GetCharacterDto>(chr))
+                .ToListAsync();
             return response;
         }
 
@@ -58,13 +56,16 @@ namespace dotnet_rpg.Services.CharacterService
         {
             var response = new ServiceResponse<GetCharacterDto>();
             try {
-                Character character = characters.First(chr => chr.Id == updatedCharacter.Id);
+                Character character = await _context.Characters
+                    .FirstAsync(chr => chr.Id == updatedCharacter.Id);
                 character.Name = updatedCharacter.Name;
                 character.Hitpoints = updatedCharacter.Hitpoints;
                 character.Strength = updatedCharacter.Strength;
                 character.Defense = updatedCharacter.Defense;
                 character.Intelligence = updatedCharacter.Intelligence;
                 character.Class = updatedCharacter.Class;
+
+                await _context.SaveChangesAsync();
                 response.Data = _mapper.Map<GetCharacterDto>(character);
             } catch(Exception e) {
                 response.Success = false;
@@ -77,9 +78,10 @@ namespace dotnet_rpg.Services.CharacterService
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
             try {
-                Character character = characters.First(chr => chr.Id == id);
-                characters.Remove(character);
-                response.Data = characters.Select(chr => _mapper.Map<GetCharacterDto>(chr)).ToList();
+                Character character = await _context.Characters.FirstAsync(chr => chr.Id == id);
+                _context.Characters.Remove(character);
+                await _context.SaveChangesAsync();
+                response.Data = await _context.Characters.Select(chr => _mapper.Map<GetCharacterDto>(chr)).ToListAsync();
             } catch(Exception e) {
                 response.Success = false;
                 response.Message = e.Message;
