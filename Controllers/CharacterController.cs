@@ -1,9 +1,11 @@
 using dotnet_rpg.Dtos.Character;
 using dotnet_rpg.Services.CharacterService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_rpg.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CharacterController : ControllerBase
@@ -32,7 +34,7 @@ public class CharacterController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddCharacter(AddCharacterDto newCharacter)
     {
-        return Created("something + [controller]", await _characterService.AddCharacter(newCharacter));
+        return Ok(await _characterService.AddCharacter(newCharacter));
     }
 
     [HttpPut]
