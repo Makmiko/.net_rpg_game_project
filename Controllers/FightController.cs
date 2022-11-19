@@ -18,18 +18,30 @@ public class FightController : ControllerBase
     [HttpPost("DefaultAttack")]
     public async Task<ActionResult<ServiceResponse<AttackResultDto>>> DefaultAttack(DefaultAttackDto request)
     {
-        return Ok(await _fightService.DefaultAttack(request));
+        var response = await _fightService.DefaultAttack(request);
+        if (!response.Success) return BadRequest(response);
+        return Ok(response);
     }
 
     [HttpPost("SkillAttack")]
     public async Task<ActionResult<ServiceResponse<AttackResultDto>>> SkillAttack(SkillAttackDto request)
     {
-        return Ok(await _fightService.SkillAttack(request));
-    }
+        var response = await _fightService.SkillAttack(request);
+        if (!response.Success) return BadRequest(response);
+        return Ok(response);    }
 
     [HttpPost("InitFight")]
     public async Task<ActionResult<ServiceResponse<FightResultDto>>> InitFight(FightRequestDto request)
     {
-        return Ok(await _fightService.InitFight(request));
+        var response = await _fightService.InitFight(request);
+        if (!response.Success) return BadRequest(response);
+        return Ok(response);    }
+
+    [HttpGet("Highscore")]
+    public async Task<ActionResult<ServiceResponse<List<HighscoreDto>>>> GetHighscore()
+    {
+        var response = await _fightService.GetHighscore();
+        if (!response.Success) return BadRequest(response);
+        return Ok(response);
     }
 }
