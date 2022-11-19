@@ -1,6 +1,7 @@
 global using dotnet_rpg.Models;
 using System.Text;
 using dotnet_rpg.Data;
+using dotnet_rpg.Services;
 using dotnet_rpg.Services.AuthService;
 using dotnet_rpg.Services.CharacterService;
 using dotnet_rpg.Services.WeaponService;
@@ -16,9 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-builder.Services.AddScoped<ICharacterService, CharacterService>();
-builder.Services.AddScoped<IWeaponService, WeaponService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICharacterService, CharacterService>();
+builder.Services.AddScoped<IFightService, FightService>();
+builder.Services.AddScoped<IWeaponService, WeaponService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
