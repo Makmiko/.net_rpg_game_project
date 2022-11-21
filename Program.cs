@@ -56,6 +56,20 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.Use(async (context, next) =>
+{
+    var url = context.Request.Path.Value;
+
+    // Redirect to swagger URL
+    if (url == "/")
+    {
+        context.Response.Redirect("/swagger/index.html");
+        return; // short circuit
+    }
+
+    await next();
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
